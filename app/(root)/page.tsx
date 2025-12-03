@@ -1,10 +1,12 @@
 import Image from "next/image"
 import Link from "next/link"
 import FitnessImage from "@/public/hp-fitness-1.jpg"
+import DailyQuote from "@/components/daily-quote"
 
 export default function Home() {
   return (
     <div className="relative overflow-hidden">
+      <DailyQuote />
       {/* Background Glow (theme-aware) */}
       <div
         className="
