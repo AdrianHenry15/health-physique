@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useState } from "react"
 import MobileMenu from "./mobile-menu"
+import UserIcon from "@/app/(root)/components/user-icon"
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
@@ -17,9 +18,9 @@ export default function Navbar() {
           Health Physique
         </Link>
 
-        {/* Desktop Links */}
-        <div className="hidden md:flex gap-10 text-sm font-medium">
-          {["Home", "Blog", "About", "Contact"].map((item) => (
+        {/* Desktop Navigation */}
+        <div className="hidden md:flex items-center gap-10 text-sm font-medium">
+          {["Home", "Blog", "About", "Contact", "Admin"].map((item) => (
             <Link
               key={item}
               href={item === "Home" ? "/" : `/${item.toLowerCase()}`}
@@ -27,20 +28,29 @@ export default function Navbar() {
               {item}
             </Link>
           ))}
+
+          {/* User Icon always on far right */}
+          <UserIcon />
         </div>
 
-        {/* Mobile menu button */}
-        <button
-          onClick={() => setOpen(!open)}
-          aria-label="Open Menu"
-          className="md:hidden flex flex-col gap-[5px] hover:opacity-80 transition-opacity">
-          <span className="w-6 h-0.5 bg-gray-900 dark:bg-gray-200"></span>
-          <span className="w-6 h-0.5 bg-gray-900 dark:bg-gray-200"></span>
-          <span className="w-6 h-0.5 bg-gray-900 dark:bg-gray-200"></span>
-        </button>
+        {/* Mobile Right Side: User Icon + Hamburger */}
+        <div className="md:hidden flex items-center gap-4">
+          {/* User */}
+          <UserIcon />
+
+          {/* Hamburger Menu */}
+          <button
+            onClick={() => setOpen(!open)}
+            aria-label="Open Menu"
+            className="flex flex-col cursor-pointer gap-[5px] hover:opacity-80 transition-opacity">
+            <span className="w-6 h-0.5 bg-gray-900 dark:bg-gray-200"></span>
+            <span className="w-6 h-0.5 bg-gray-900 dark:bg-gray-200"></span>
+            <span className="w-6 h-0.5 bg-gray-900 dark:bg-gray-200"></span>
+          </button>
+        </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Dropdown */}
       <MobileMenu open={open} setOpen={setOpen} />
     </nav>
   )

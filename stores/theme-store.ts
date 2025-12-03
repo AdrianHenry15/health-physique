@@ -1,11 +1,11 @@
 import { create } from "zustand"
 
-type UIState = {
+type ThemeState = {
   theme: "light" | "dark"
   toggleTheme: () => void
 }
 
-export const useUIStore = create<UIState>((set) => ({
+export const useThemeStore = create<ThemeState>((set) => ({
   theme: "light",
   toggleTheme: () =>
     set((s) => ({ theme: s.theme === "light" ? "dark" : "light" })),

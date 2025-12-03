@@ -1,0 +1,23 @@
+[
+  {
+    "title": "5 Essential Exercises for Building Strength",
+    "description": "A beginner-friendly breakdown of compound lifts to add to your workouts today.",
+    "date": "Jan 12, 2025",
+    "slug": "strength-essentials",
+    "image": "/hp-fitness-1.jpg"
+  },
+  {
+    "title": "The Ultimate Guide to Nutrition for Fat Loss",
+    "description": "Understand calories, macros, and sustainable habits that actually work.",
+    "date": "Jan 5, 2025",
+    "slug": "fat-loss-nutrition",
+    "image": "/hp-fitness-2.jpg"
+  },
+  {
+    "title": "How to Stay Motivated With Your Fitness Routine",
+    "description": "Consistency beats intensity — here’s how to create a routine you stick with.",
+    "date": "Dec 28, 2024",
+    "slug": "fitness-motivation",
+    "image": "/hp-fitness-3.jpg"
+  }
+]

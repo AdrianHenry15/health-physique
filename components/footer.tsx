@@ -3,13 +3,7 @@ import Link from "next/link"
 
 export default function Footer() {
   return (
-    <footer
-      className="
-        border-t border-gray-200 dark:border-gray-800 
-        bg-white dark:bg-black
-        text-gray-700 dark:text-gray-300
-        mt-24
-      ">
+    <footer className="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-black text-gray-700 dark:text-gray-300 mt-24">
       <div className="max-w-6xl mx-auto px-6 py-12">
         {/* Top Section */}
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-10">
@@ -29,10 +23,7 @@ export default function Footer() {
               <Link
                 key={item}
                 href={item === "Home" ? "/" : `/${item.toLowerCase()}`}
-                className="
-                  hover:text-blue-600 dark:hover:text-blue-400 
-                  transition-colors
-                ">
+                className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                 {item}
               </Link>
             ))}

@@ -27,6 +27,9 @@ export default function MobileMenu({
         <Link href="/contact" onClick={() => setOpen(false)}>
           Contact
         </Link>
+        <Link href="/admin" onClick={() => setOpen(false)}>
+          Admin
+        </Link>
       </div>
     </div>
   )

@@ -19,6 +19,9 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  env: {
+    HCAPTCHA_SECRET: process.env.HCAPTCHA_SECRET,
+  },
 }
 
 export default nextConfig

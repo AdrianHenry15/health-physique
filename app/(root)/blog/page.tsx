@@ -1,34 +1,5 @@
 import BlogCard from "./components/blog-card"
-import FitnessImg1 from "@/public/hp-fitness-2.jpg"
-import FitnessImg2 from "@/public/hp-fitness-3.jpg"
-import FitnessImg3 from "@/public/hp-fitness-4.jpg"
-
-const demoPosts = [
-  {
-    title: "5 Essential Exercises for Building Strength",
-    description:
-      "A beginner-friendly breakdown of compound lifts to add to your workouts today.",
-    date: "Jan 12, 2025",
-    slug: "strength-essentials",
-    image: FitnessImg1,
-  },
-  {
-    title: "The Ultimate Guide to Nutrition for Fat Loss",
-    description:
-      "Understand calories, macros, and sustainable habits that actually work.",
-    date: "Jan 5, 2025",
-    slug: "fat-loss-nutrition",
-    image: FitnessImg2,
-  },
-  {
-    title: "How to Stay Motivated With Your Fitness Routine",
-    description:
-      "Consistency beats intensity — here’s how to create a routine you stick with.",
-    date: "Dec 28, 2024",
-    slug: "fitness-motivation",
-    image: FitnessImg3,
-  },
-]
+import DemoBlogPosts from "@/lib/demo-blog-data.json"
 
 export default function BlogPage() {
   return (
@@ -46,7 +17,7 @@ export default function BlogPage() {
 
       {/* Blog Grid */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
-        {demoPosts.map((post) => (
+        {DemoBlogPosts.map((post) => (
           <BlogCard
             title={post.title}
             key={post.slug}
