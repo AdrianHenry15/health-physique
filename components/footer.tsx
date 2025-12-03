@@ -1,5 +1,6 @@
 import { FaInstagram, FaTwitter, FaYoutube } from "react-icons/fa"
 import Link from "next/link"
+import Image from "next/image"
 
 export default function Footer() {
   return (
@@ -9,9 +10,17 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-10">
           {/* Brand */}
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Health Physique
-            </h2>
+            <div className="flex items-center">
+              <Image
+                src="/hplogo.png"
+                alt="Health Physique Logo"
+                width={40}
+                height={40}
+              />
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Health Physique
+              </h2>
+            </div>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 max-w-xs">
               Empowering you with science-based fitness and wellness insights.
             </p>

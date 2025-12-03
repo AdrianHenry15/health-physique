@@ -66,8 +66,9 @@ export default function AdminPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-20">
-      <h1 className="text-4xl font-bold mb-10 text-gray-900 dark:text-white">
-        Admin Panel — Create Blog Post
+      <h1 className="text-4xl flex flex-col font-bold mb-10 text-gray-900 dark:text-white">
+        <span className="mb-2">Admin Panel</span>
+        <span>Create Blog Post</span>
       </h1>
 
       <form

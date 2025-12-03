@@ -21,6 +21,9 @@ export default function MainLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="icon" href="/hplogo.png" />
+      </head>
       <body className={nunito.className}>
         <Suspense fallback={<Loading />}>
           <ThemeProvider

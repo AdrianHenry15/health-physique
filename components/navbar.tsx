@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useState } from "react"
 import MobileMenu from "./mobile-menu"
 import UserIcon from "@/app/(root)/components/user-icon"
+import Image from "next/image"
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
@@ -12,15 +13,21 @@ export default function Navbar() {
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-black/70 backdrop-blur-md shadow-sm dark:shadow-none transition-colors duration-300">
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
         {/* Logo */}
-        <Link
-          href="/"
-          className="font-bold text-2xl tracking-tight text-gray-900 dark:text-white hover:opacity-80 transition-opacity">
-          Health Physique
+        <Link href="/" className="flex items-center gap-2">
+          <Image
+            src="/hplogo.png"
+            alt="Health Physique Logo"
+            width={40}
+            height={40}
+          />
+          <span className="font-bold text-2xl tracking-tight text-gray-900 dark:text-white hover:opacity-80 transition-opacity">
+            Health Physique
+          </span>
         </Link>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-10 text-sm font-medium">
-          {["Home", "Blog", "About", "Contact", "Admin"].map((item) => (
+          {["Home", "Blog", "About", "Contact"].map((item) => (
             <Link
               key={item}
               href={item === "Home" ? "/" : `/${item.toLowerCase()}`}
