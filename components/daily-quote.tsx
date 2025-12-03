@@ -22,11 +22,7 @@ export default function DailyQuote() {
             “{quote}”
           </p>
 
-          <p
-            className="
-              mt-2 text-sm font-medium tracking-wide uppercase
-              text-gray-500 dark:text-gray-400
-            ">
+          <p className="mt-2 text-sm font-medium tracking-wide uppercase text-gray-500 dark:text-gray-400">
             Daily Motivation
           </p>
         </div>

@@ -1,17 +1,30 @@
 "use client"
 
+import { getExcerpt } from "@/lib/sanity/utils"
+import { Post } from "@/sanity.types"
+import { imageUrl } from "@/sanity/lib/image-url"
 import Image, { StaticImageData } from "next/image"
 import Link from "next/link"
 
-type BlogItem = {
-  title: string
-  description: string
-  image: StaticImageData | string
-  slug: string
-  date: string
-}
-
-export default function BlogPreview({ posts }: { posts: BlogItem[] }) {
+export default function BlogPreview({ posts }: { posts: Post[] }) {
+  const noPosts = !posts || posts.length === 0
+  if (noPosts) {
+    return (
+      <div className="flex flex-col items-center justify-center py-28 text-center">
+        <p className="text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-3">
+          No articles yet
+        </p>
+        <p className="text-gray-500 dark:text-gray-400 max-w-md">
+          Our team is working hard on publishing high-quality fitness and
+          nutrition content.
+          <br />
+          <span className="font-medium text-blue-600 dark:text-blue-400">
+            New posts will be available soon!
+          </span>
+        </p>
+      </div>
+    )
+  }
   return (
     <section className="py-20 bg-white dark:bg-black border-t border-gray-200 dark:border-gray-800">
       <div className="max-w-6xl mx-auto px-6">
@@ -37,8 +50,8 @@ export default function BlogPreview({ posts }: { posts: BlogItem[] }) {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
           {posts.map((post) => (
             <Link
-              key={post.slug}
-              href={`/blog/${post.slug}`}
+              key={post.slug?.source}
+              href={`/blog/${post.slug?.source}`}
               className="group rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative">
               {/* Gradient Hover Layer */}
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-linear-to-br from-blue-500/20 via-purple-500/20 to-pink-500/20 transition-opacity pointer-events-none" />
@@ -46,8 +59,12 @@ export default function BlogPreview({ posts }: { posts: BlogItem[] }) {
               {/* Image */}
               <div className="relative h-48 w-full overflow-hidden">
                 <Image
-                  src={post.image}
-                  alt={post.title}
+                  src={
+                    imageUrl(post.mainImage!).width(600).height(400).url() as
+                      | string
+                      | StaticImageData
+                  }
+                  alt={post.title!}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
@@ -60,11 +77,11 @@ export default function BlogPreview({ posts }: { posts: BlogItem[] }) {
                 </h3>
 
                 <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed line-clamp-3">
-                  {post.description}
+                  {getExcerpt(post.body)}...
                 </p>
 
                 <p className="text-xs text-gray-500 dark:text-gray-500">
-                  {post.date}
+                  {post.publishedAt!}
                 </p>
 
                 <span className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 text-sm font-medium group-hover:underline">

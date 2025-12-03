@@ -1,13 +1,24 @@
+"use client"
+
 import Image from "next/image"
 import Link from "next/link"
 import FitnessImage from "@/public/hp-fitness-1.jpg"
 import DailyQuote from "@/components/daily-quote"
 import BlogPreview from "./components/blog-preview"
-import DemoBlogPosts from "@/lib/demo-blog-data.json"
-
-const posts = DemoBlogPosts.slice(0, 3)
+import { useEffect, useState } from "react"
+import { fetchAllPosts } from "@/lib/sanity/actions"
+import { Post } from "@/sanity.types"
 
 export default function Home() {
+  const [posts, setPosts] = useState<Post[]>([])
+
+  useEffect(() => {
+    const load = async () => {
+      const data = await fetchAllPosts()
+      setPosts(data)
+    }
+    load()
+  }, [])
   return (
     <div className="relative overflow-hidden">
       <DailyQuote />
