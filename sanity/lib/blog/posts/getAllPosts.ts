@@ -1,8 +1,8 @@
-import { defineQuery } from "next-sanity";
-import { sanityFetch } from "../../live";
+import { defineQuery } from "next-sanity"
+import { sanityClient } from "../../client"
 
 export const getAllPosts = async () => {
-    const ALL_POSTS = defineQuery(`
+  const ALL_POSTS = defineQuery(`
         *[_type == "post"] | order(publishedAt desc) {
             _id,
             title,
@@ -25,16 +25,14 @@ export const getAllPosts = async () => {
             },
             body
         }
-    `);
+    `)
 
-    try {
-        const posts = await sanityFetch({
-            query: ALL_POSTS,
-        });
+  try {
+    const posts = await sanityClient.fetch(ALL_POSTS)
 
-        return posts.data || [];
-    } catch (error) {
-        console.error("Error fetching all Posts:", error);
-        return [];
-    }
-};
+    return posts.data || []
+  } catch (error) {
+    console.error("Error fetching all Posts:", error)
+    return []
+  }
+}
