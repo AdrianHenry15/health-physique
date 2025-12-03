@@ -133,18 +133,18 @@ const UserIconMenu = ({ closeMenu }: IUserIconMenuProps) => {
         {/* Admin | Create Blog */}
         {user.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL_1 && (
           <div className="border-b border-neutral-100 dark:border-neutral-800">
-            <h5 className="ml-2 mt-2">Admin</h5>
+            <h5 className="ml-2 mt-2 text-xs">Admin</h5>
             <button
               role="menuitem"
               tabIndex={0}
               className="w-full text-left px-3 py-2 mb-2 text-sm rounded-md text-black hover:text-white hover:bg-blue-500 dark:hover:bg-blue-900 dark:text-white cursor-pointer transition-colors duration-150 flex items-center gap-2"
               onClick={() => {
                 closeMenu()
-                router.push("/admin/create-blog")
+                router.push("/admin/create-blog-post")
               }}
               onKeyDown={onActivate(() => {
                 closeMenu()
-                router.push("/admin/create-blog")
+                router.push("/admin/create-blog-post")
               })}>
               <User size={16} /> Create Blog
             </button>

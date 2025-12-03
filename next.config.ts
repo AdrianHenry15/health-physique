@@ -21,6 +21,8 @@ const nextConfig: NextConfig = {
   },
   env: {
     HCAPTCHA_SECRET: process.env.HCAPTCHA_SECRET,
+    SANITY_API_TOKEN: process.env.SANITY_API_TOKEN,
+    SANITY_API_READ_TOKEN: process.env.SANITY_API_READ_TOKEN,
   },
 }
 

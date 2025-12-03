@@ -1,7 +1,21 @@
+"use client"
+
+import { useEffect, useState } from "react"
 import BlogCard from "./components/blog-card"
-import DemoBlogPosts from "@/lib/demo-blog-data.json"
+import { fetchAllPosts } from "@/lib/sanity/actions"
+import { Post } from "@/sanity.types"
+import { imageUrl } from "@/sanity/lib/image-url"
 
 export default function BlogPage() {
+  const [posts, setPosts] = useState<Post[]>([])
+
+  useEffect(() => {
+    const load = async () => {
+      const data = await fetchAllPosts()
+      setPosts(data)
+    }
+    load()
+  }, [])
   return (
     <div className="pt-32 max-w-6xl mx-auto px-6 pb-24">
       {/* Header / Hero */}
@@ -17,14 +31,14 @@ export default function BlogPage() {
 
       {/* Blog Grid */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
-        {DemoBlogPosts.map((post) => (
+        {posts.map((post) => (
           <BlogCard
-            title={post.title}
-            key={post.slug}
-            description={post.description}
-            date={post.date}
-            slug={post.slug}
-            image={post.image}
+            title={post.title!}
+            key={post.slug?.source}
+            description={post.body?.slice(0, 150) + "..."}
+            date={post.publishedAt!}
+            slug={post.slug!.source!}
+            image={imageUrl(post.mainImage!).width(400).height(250).url()!}
           />
         ))}
       </div>
