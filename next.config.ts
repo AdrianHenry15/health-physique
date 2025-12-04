@@ -1,3 +1,4 @@
+import { withBotId } from "botid/next/config"
 import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
@@ -15,7 +16,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "kgwxlzocwejlqaolecbf.supabase.co",
+        hostname: "vmbdtonwtzbpsqnfvodp.supabase.co",
       },
     ],
   },
@@ -23,7 +24,8 @@ const nextConfig: NextConfig = {
     HCAPTCHA_SECRET: process.env.HCAPTCHA_SECRET,
     SANITY_API_TOKEN: process.env.SANITY_API_TOKEN,
     SANITY_API_READ_TOKEN: process.env.SANITY_API_READ_TOKEN,
+    PRIVATE_EMAILJS_KEY: process.env.PRIVATE_EMAILJS_KEY,
   },
 }
 
-export default nextConfig
+export default withBotId(nextConfig)

@@ -3,6 +3,7 @@ import { Nunito } from "next/font/google"
 import { Suspense } from "react"
 import { ThemeProvider } from "next-themes"
 import Loading from "./loader"
+import { Toaster } from "react-hot-toast"
 
 const nunito = Nunito({
   variable: "--font-nunito",
@@ -26,6 +27,7 @@ export default function MainLayout({
       </head>
       <body className={nunito.className}>
         <Suspense fallback={<Loading />}>
+          <Toaster position="top-center" />
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"

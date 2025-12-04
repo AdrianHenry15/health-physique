@@ -6,6 +6,7 @@ import { useAuthStore } from "@/stores/auth-store"
 import { LogOut, User } from "lucide-react"
 import { useRouter } from "next/navigation"
 import React, { useEffect, useRef } from "react"
+import ThemeSelector from "./theme-selector"
 
 interface IUserIconMenuProps {
   closeMenu: () => void
@@ -66,7 +67,7 @@ const UserIconMenu = ({ closeMenu }: IUserIconMenuProps) => {
     }
   }
 
-  // NOT SIGNED IN --------------------------------------------------------------
+  // NOT SIGNED IN
   if (!user) {
     return (
       <div
@@ -94,7 +95,7 @@ const UserIconMenu = ({ closeMenu }: IUserIconMenuProps) => {
     )
   }
 
-  // SIGNED-IN ------------------------------------------------------------------
+  // SIGNED-IN
   return (
     <div
       ref={menuRef}
@@ -112,24 +113,26 @@ const UserIconMenu = ({ closeMenu }: IUserIconMenuProps) => {
           </span>
         </div>
       </div>
+      {/* Profile */}
+      <button
+        role="menuitem"
+        tabIndex={0}
+        className="w-full text-left px-3 py-2 my-2 text-sm rounded-md text-black hover:text-white hover:bg-blue-500 dark:hover:bg-blue-900 dark:text-white cursor-pointer transition-colors duration-150 flex items-center gap-2"
+        onClick={() => {
+          closeMenu()
+          router.push("/profile")
+        }}
+        onKeyDown={onActivate(() => {
+          closeMenu()
+          router.push("/profile")
+        })}>
+        <User size={16} /> My Profile
+      </button>
+      <div className="my-1 border-t border-neutral-100 dark:border-neutral-800" />
+      {/* Theme */}
+      <ThemeSelector closeMenu={closeMenu} onActivate={onActivate} />
 
       <div className="flex flex-col px-1 py-1">
-        {/* Profile */}
-        <button
-          role="menuitem"
-          tabIndex={0}
-          className="w-full text-left px-3 py-2 text-sm rounded-md text-black hover:text-white hover:bg-blue-500 dark:hover:bg-blue-900 dark:text-white cursor-pointer transition-colors duration-150 flex items-center gap-2"
-          onClick={() => {
-            closeMenu()
-            router.push("/profile")
-          }}
-          onKeyDown={onActivate(() => {
-            closeMenu()
-            router.push("/profile")
-          })}>
-          <User size={16} /> My Profile
-        </button>
-        <div className="my-1 border-t border-neutral-100 dark:border-neutral-800" />
         {/* Admin | Create Blog */}
         {user.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL_1 && (
           <div className="border-b border-neutral-100 dark:border-neutral-800">
@@ -140,11 +143,11 @@ const UserIconMenu = ({ closeMenu }: IUserIconMenuProps) => {
               className="w-full text-left px-3 py-2 mb-2 text-sm rounded-md text-black hover:text-white hover:bg-blue-500 dark:hover:bg-blue-900 dark:text-white cursor-pointer transition-colors duration-150 flex items-center gap-2"
               onClick={() => {
                 closeMenu()
-                router.push("/admin/create-blog-post")
+                router.push("/admin/posts/new")
               }}
               onKeyDown={onActivate(() => {
                 closeMenu()
-                router.push("/admin/create-blog-post")
+                router.push("/admin/posts/new")
               })}>
               <User size={16} /> Create Blog
             </button>

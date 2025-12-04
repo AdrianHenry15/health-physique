@@ -2,17 +2,15 @@
 
 import { useEffect, useState } from "react"
 import BlogCard from "./components/blog-card"
-import { fetchAllPosts } from "@/lib/sanity/actions"
-import { Post } from "@/sanity.types"
-import { imageUrl } from "@/sanity/lib/image-url"
-import { getExcerpt } from "@/lib/sanity/utils"
+import { BlogPost } from "@/lib/types"
+import { getAllPosts } from "@/lib/supabase/blog"
 
 export default function BlogPage() {
-  const [posts, setPosts] = useState<Post[]>([])
+  const [posts, setPosts] = useState<BlogPost[]>([])
 
   useEffect(() => {
     const load = async () => {
-      const data = await fetchAllPosts()
+      const data = await getAllPosts()
       setPosts(data)
     }
     load()
@@ -61,16 +59,16 @@ export default function BlogPage() {
       )}
 
       {/* Blog Grid */}
-      {!isLoading && noPosts && (
+      {!isLoading && !noPosts && (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
           {posts.map((post) => (
             <BlogCard
               title={post.title!}
-              key={post.slug?.source}
-              description={getExcerpt(post.body) + "..."}
-              date={post.publishedAt!}
-              slug={post.slug!.source!}
-              image={imageUrl(post.mainImage!).width(400).height(250).url()!}
+              key={post.slug!}
+              description={post.excerpt!}
+              date={post.created_at!}
+              slug={post.slug!}
+              image={post.cover_image!}
             />
           ))}
         </div>

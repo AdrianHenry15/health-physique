@@ -6,15 +6,15 @@ import FitnessImage from "@/public/hp-fitness-1.jpg"
 import DailyQuote from "@/components/daily-quote"
 import BlogPreview from "./components/blog-preview"
 import { useEffect, useState } from "react"
-import { fetchAllPosts } from "@/lib/sanity/actions"
-import { Post } from "@/sanity.types"
+import { BlogPost } from "@/lib/types"
+import { getAllPosts } from "@/lib/supabase/blog"
 
 export default function Home() {
-  const [posts, setPosts] = useState<Post[]>([])
+  const [posts, setPosts] = useState<BlogPost[]>([])
 
   useEffect(() => {
     const load = async () => {
-      const data = await fetchAllPosts()
+      const data = await getAllPosts()
       setPosts(data)
     }
     load()
