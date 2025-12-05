@@ -1,8 +1,10 @@
 "use server"
 
 import { createClient } from "@/lib/supabase/server"
-import { BlogPost } from "../types"
 
+/* -----------------------------------------
+ * GET ALL POSTS
+ * ----------------------------------------*/
 export async function getAllPosts() {
   const supabase = await createClient()
 
@@ -19,7 +21,10 @@ export async function getAllPosts() {
   return data
 }
 
-export async function getPostBySlug(slug: string) {
+/* -----------------------------------------
+ * GET ONE POST BY SLUG
+ * ----------------------------------------*/
+export async function getPostById(slug: string) {
   const supabase = await createClient()
 
   const { data, error } = await supabase
@@ -32,30 +37,58 @@ export async function getPostBySlug(slug: string) {
   return data
 }
 
-export async function createPost({
-  title,
-  slug,
-  body,
-  excerpt,
-  cover_image,
-  author_id,
-}: BlogPost) {
+// CREATE POST
+export async function createPost(payload: {
+  title: string
+  slug: string
+  body: string
+  excerpt: string
+  cover_image: string
+  author_id: string
+}) {
   const supabase = await createClient()
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { data, error } = await supabase.from("blog_posts").insert([
-    {
-      title,
-      slug,
-      body,
-      excerpt,
-      cover_image,
-      author_id,
-    },
-  ])
+  const { error } = await supabase.from("blog_posts").insert(payload)
+
+  if (error) return { error }
+
+  return { error: null }
+}
+
+// UPDATE POST
+export async function updatePost(
+  id: string,
+  payload: Partial<{
+    title: string
+    slug: string
+    body: string
+    excerpt: string
+    cover_image: string
+    author_id: string
+  }>
+) {
+  const supabase = await createClient()
+
+  const { error } = await supabase
+    .from("blog_posts")
+    .update(payload)
+    .eq("id", id)
+
+  if (error) return { error }
+
+  return { error: null }
+}
+
+/* -----------------------------------------
+ * DELETE POST
+ * ----------------------------------------*/
+export async function deletePost(id: string) {
+  const supabase = await createClient()
+
+  const { error } = await supabase.from("blog_posts").delete().eq("id", id)
 
   if (error) {
-    console.error("Create post error:", error)
+    console.error("Delete post error:", error)
     return { error: error.message }
   }
 

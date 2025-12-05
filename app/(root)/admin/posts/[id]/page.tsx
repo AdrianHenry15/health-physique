@@ -1,9 +1,9 @@
 "use client"
 
 import { use, useEffect, useState } from "react"
-import { supabase } from "@/lib/supabase/client"
 import PostForm from "../../components/post-form/post-form"
-import { BlogPost } from "@/lib/types" // optional if you have types
+import { BlogPost } from "@/lib/types"
+import { getPostById } from "@/lib/supabase/blog"
 
 export default function EditPostPage({
   params,
@@ -15,35 +15,24 @@ export default function EditPostPage({
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    async function fetchPost() {
-      const { data, error } = await supabase
-        .from("blog_posts")
-        .select("*")
-        .eq("id", id)
-        .single()
-
-      if (error) {
-        console.error("Error fetching post:", error)
-      } else {
-        setPost(data)
-      }
+    async function loadPost() {
+      const postData = await getPostById(id)
+      setPost(postData)
       setLoading(false)
     }
 
-    fetchPost()
+    loadPost()
   }, [id])
 
-  if (loading) {
+  if (loading)
     return (
       <div className="pt-32 text-center text-gray-500 dark:text-gray-300">
         Loading post...
       </div>
     )
-  }
 
-  if (!post) {
+  if (!post)
     return <div className="pt-32 text-center text-red-500">Post not found.</div>
-  }
 
-  return <PostForm initialData={post} />
+  return <PostForm initialData={post} isEditing />
 }

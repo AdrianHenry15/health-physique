@@ -4,6 +4,7 @@ import { Suspense } from "react"
 import { ThemeProvider } from "next-themes"
 import Loading from "./loader"
 import { Toaster } from "react-hot-toast"
+import ModalRoot from "@/components/modals/modal-root"
 
 const nunito = Nunito({
   variable: "--font-nunito",
@@ -34,6 +35,7 @@ export default function MainLayout({
             enableSystem
             disableTransitionOnChange>
             {children}
+            <ModalRoot />
           </ThemeProvider>
         </Suspense>
       </body>

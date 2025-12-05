@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { useEffect, useState } from "react"
@@ -8,8 +9,15 @@ import AuthorSelect from "./author-select"
 import BlogBodyEditor from "./blog-body-editor"
 import ImageUploader from "./image-uploader"
 import toast from "react-hot-toast"
+import { createPost, updatePost } from "@/lib/supabase/blog"
 
-export default function PostForm({ initialData }: { initialData?: BlogPost }) {
+export default function PostForm({
+  initialData,
+  isEditing = false,
+}: {
+  initialData?: BlogPost
+  isEditing?: boolean
+}) {
   const router = useRouter()
 
   const [title, setTitle] = useState(initialData?.title || "")
@@ -19,7 +27,6 @@ export default function PostForm({ initialData }: { initialData?: BlogPost }) {
   const [authors, setAuthors] = useState<Partial<Author>[]>([])
   const [authorId, setAuthorId] = useState(initialData?.author_id || "")
 
-  // existing image (only for editing)
   const existingImage = initialData?.cover_image || ""
 
   const slug =
@@ -31,7 +38,7 @@ export default function PostForm({ initialData }: { initialData?: BlogPost }) {
 
   const excerpt = body?.replace(/\s+/g, " ").trim().slice(0, 160) || ""
 
-  // 🔵 Load authors on mount
+  // Load authors
   useEffect(() => {
     async function loadAuthors() {
       const { data } = await supabase.from("authors").select("id, name")
@@ -40,40 +47,38 @@ export default function PostForm({ initialData }: { initialData?: BlogPost }) {
     loadAuthors()
   }, [])
 
+  // ----------------------------------------------------------
+  // SUBMIT LOGIC
+  // ----------------------------------------------------------
   const handleSubmit = async () => {
     if (!authorId) {
       toast.error("Please select an author.")
       return
     }
-    setSaving(true)
-    const loadingToast = toast.loading("Saving post...")
 
-    if (!authorId) {
-      toast.error("Please select an author.", { id: loadingToast })
-      setSaving(false)
-      return
-    }
+    setSaving(true)
+    const loadingToast = toast.loading(
+      isEditing ? "Updating post..." : "Saving post..."
+    )
 
     let coverImageUrl = existingImage
 
-    // ----------------------------------------------------------
-    // 1️⃣ UPLOAD IMAGE FIRST — REQUIRED FOR cover_image NOT NULL
-    // ----------------------------------------------------------
+    // REQUIRE COVER IMAGE
     if (!existingImage && !selectedFile) {
       toast.error("A cover image is required.", { id: loadingToast })
       setSaving(false)
       return
     }
 
+    // UPLOAD IMAGE IF NEEDED
     if (selectedFile) {
       const fileName = `${Date.now()}-${selectedFile.name}`
-
       const { error: uploadError } = await supabase.storage
         .from("blog-images")
         .upload(fileName, selectedFile)
 
       if (uploadError) {
-        console.error("Upload failed:", uploadError)
+        console.error(uploadError)
         toast.error("Image upload failed.", { id: loadingToast })
         setSaving(false)
         return
@@ -86,9 +91,6 @@ export default function PostForm({ initialData }: { initialData?: BlogPost }) {
       coverImageUrl = data.publicUrl
     }
 
-    // ----------------------------------------------------------
-    // 2️⃣ ONLY AFTER IMAGE IS READY → CREATE OR UPDATE POST
-    // ----------------------------------------------------------
     const payload = {
       title,
       slug,
@@ -98,39 +100,43 @@ export default function PostForm({ initialData }: { initialData?: BlogPost }) {
       author_id: authorId,
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let error: any
+    let error: any = null
 
-    if (initialData) {
-      // UPDATE
-      const { error: updateError } = await supabase
-        .from("blog_posts")
-        .update(payload)
-        .eq("id", initialData.id)
+    // UPDATE MODE
+    if (isEditing && initialData) {
+      const { error: updateError } = await updatePost(initialData.id, payload)
+
       error = updateError
-    } else {
-      // INSERT
-      const { error: insertError } = await supabase
-        .from("blog_posts")
-        .insert(payload)
+    }
+
+    // CREATE MODE
+    if (!isEditing) {
+      const { error: insertError } = await createPost(payload)
+
       error = insertError
     }
 
     if (error) {
-      console.error("DB error:", error)
+      console.error("DB Error:", error)
       toast.error("Failed to save post.", { id: loadingToast })
       setSaving(false)
       return
     }
 
-    toast.success("Post saved successfully.", { id: loadingToast })
+    toast.success(isEditing ? "Post updated!" : "Post created!", {
+      id: loadingToast,
+    })
+
     router.push("/admin/posts")
   }
 
+  // ----------------------------------------------------------
+  // RENDER
+  // ----------------------------------------------------------
   return (
     <div className="max-w-4xl mx-auto py-24 px-4 sm:px-6 space-y-10">
       <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
-        {initialData ? "Edit Blog Post" : "Create Blog Post"}
+        {isEditing ? "Edit Blog Post" : "Create Blog Post"}
       </h1>
 
       {/* Title */}
@@ -143,7 +149,7 @@ export default function PostForm({ initialData }: { initialData?: BlogPost }) {
         />
       </div>
 
-      {/* Author Select */}
+      {/* Author */}
       <AuthorSelect
         authorId={authorId}
         setAuthorId={setAuthorId}
@@ -165,8 +171,14 @@ export default function PostForm({ initialData }: { initialData?: BlogPost }) {
       <button
         onClick={handleSubmit}
         disabled={saving}
-        className="w-full cursor-pointer sm:w-auto px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 disabled:opacity-50">
-        {saving ? "Saving..." : "Save Post"}
+        className="w-full cursor-pointer sm:w-auto px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 disabled:opacity-50 transition">
+        {saving
+          ? isEditing
+            ? "Updating..."
+            : "Saving..."
+          : isEditing
+          ? "Update Post"
+          : "Create Post"}
       </button>
     </div>
   )

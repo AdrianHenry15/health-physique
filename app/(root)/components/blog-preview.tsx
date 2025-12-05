@@ -59,10 +59,11 @@ export default function BlogPreview({ posts }: { posts: BlogPost[] }) {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
           {posts.map((post) => (
             <BlogCard
+              id={post.id!}
               title={post.title!}
               key={post.slug}
               description={post.excerpt!}
-              date={post.created_at!}
+              created_at={post.created_at!}
               slug={post.slug!}
               image={post.cover_image!}
             />
