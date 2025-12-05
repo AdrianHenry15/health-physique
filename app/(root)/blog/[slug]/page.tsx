@@ -4,14 +4,14 @@ import { use, useEffect, useState } from "react"
 import { supabase } from "@/lib/supabase/client"
 import { BlogPost, Author } from "@/lib/types"
 import Image from "next/image"
-import { getPostById } from "@/lib/supabase/blog"
+import { getPostBySlug } from "@/lib/supabase/blog"
 
 export default function BlogPostPage({
   params,
 }: {
-  params: Promise<{ id: string }>
+  params: Promise<{ slug: string }>
 }) {
-  const { id } = use(params)
+  const { slug } = use(params)
 
   const [post, setPost] = useState<BlogPost | null>(null)
   const [author, setAuthor] = useState<Author | null>(null)
@@ -20,7 +20,7 @@ export default function BlogPostPage({
   useEffect(() => {
     async function load() {
       // Load blog post
-      const postData = await getPostById(id)
+      const postData = await getPostBySlug(slug)
 
       if (!postData) {
         console.error("Post not found")
@@ -42,7 +42,7 @@ export default function BlogPostPage({
     }
 
     load()
-  }, [id])
+  }, [slug])
 
   if (loading) {
     return (
