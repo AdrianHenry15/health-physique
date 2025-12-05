@@ -6,9 +6,11 @@ import { useRouter } from "next/navigation"
 import { Author } from "@/lib/types"
 import ImageUploader from "../post-form/image-uploader"
 import toast from "react-hot-toast"
+import { useAuthStore } from "@/stores/auth-store"
 
 export default function AuthorForm({ initialData }: { initialData?: Author }) {
   const router = useRouter()
+  const { user } = useAuthStore()
 
   const [name, setName] = useState(initialData?.name || "")
   const [bio, setBio] = useState(initialData?.bio || "")
@@ -20,11 +22,6 @@ export default function AuthorForm({ initialData }: { initialData?: Author }) {
   const handleSubmit = async () => {
     setSaving(true)
     const loadingToast = toast.loading("Saving author...")
-
-    // 1️⃣ Get logged-in user
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
 
     if (!user) {
       toast.error("You must be logged in to create an author.")

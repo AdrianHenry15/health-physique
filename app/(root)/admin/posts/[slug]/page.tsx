@@ -3,26 +3,26 @@
 import { use, useEffect, useState } from "react"
 import PostForm from "../../components/post-form/post-form"
 import { BlogPost } from "@/lib/types"
-import { getPostById } from "@/lib/supabase/blog"
+import { getPostBySlug } from "@/lib/supabase/blog"
 
 export default function EditPostPage({
   params,
 }: {
-  params: Promise<{ id: string }>
+  params: Promise<{ slug: string }>
 }) {
-  const { id } = use(params)
+  const { slug } = use(params)
   const [post, setPost] = useState<BlogPost | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function loadPost() {
-      const postData = await getPostById(id)
+      const postData = await getPostBySlug(slug)
       setPost(postData)
       setLoading(false)
     }
 
     loadPost()
-  }, [id])
+  }, [slug])
 
   if (loading)
     return (

@@ -61,6 +61,7 @@ const UserIconMenu = ({ closeMenu }: IUserIconMenuProps) => {
     closeMenu()
     try {
       await signOut()
+      router.push("/")
       router.refresh()
     } catch {
       router.refresh()

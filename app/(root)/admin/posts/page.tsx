@@ -66,11 +66,13 @@ export default function AdminPostsPage() {
               className="p-4 border rounded-lg flex justify-between items-center bg-white dark:bg-neutral-900">
               <div>
                 <p className="font-semibold">{post.title}</p>
-                <p className="text-sm text-gray-500">{post.slug}</p>
+                <p className="text-sm text-gray-500">
+                  {new Date(post.created_at!).toLocaleDateString()}
+                </p>
               </div>
 
               <Link
-                href={`/admin/posts/${post.id}`}
+                href={`/admin/posts/${post.slug}`}
                 className="text-blue-600 hover:underline">
                 Edit →
               </Link>

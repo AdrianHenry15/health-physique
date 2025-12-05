@@ -9,7 +9,8 @@ import AuthorSelect from "./author-select"
 import BlogBodyEditor from "./blog-body-editor"
 import ImageUploader from "./image-uploader"
 import toast from "react-hot-toast"
-import { createPost, updatePost } from "@/lib/supabase/blog"
+import { useAuthStore } from "@/stores/auth-store"
+import { useModalStore } from "@/stores/modal-store"
 
 export default function PostForm({
   initialData,
@@ -19,6 +20,8 @@ export default function PostForm({
   isEditing?: boolean
 }) {
   const router = useRouter()
+  const { user, loading: authLoading } = useAuthStore()
+  const { openModal, closeModal } = useModalStore()
 
   const [title, setTitle] = useState(initialData?.title || "")
   const [body, setBody] = useState(initialData?.body || "")
@@ -47,12 +50,24 @@ export default function PostForm({
     loadAuthors()
   }, [])
 
-  // ----------------------------------------------------------
-  // SUBMIT LOGIC
-  // ----------------------------------------------------------
   const handleSubmit = async () => {
+    if (authLoading) {
+      toast.error("Checking authentication, please wait.")
+      return
+    }
+
+    if (!user) {
+      toast.error("You must be signed in to save a post.")
+      return
+    }
+
     if (!authorId) {
       toast.error("Please select an author.")
+      return
+    }
+
+    if (!existingImage && !selectedFile) {
+      toast.error("A cover image is required.")
       return
     }
 
@@ -61,78 +76,103 @@ export default function PostForm({
       isEditing ? "Updating post..." : "Saving post..."
     )
 
-    let coverImageUrl = existingImage
+    try {
+      const formData = new FormData()
+      formData.append("title", title)
+      formData.append("slug", slug)
+      formData.append("excerpt", excerpt)
+      formData.append("body", body)
+      formData.append("author_id", authorId)
+      formData.append("user_id", user.id)
 
-    // REQUIRE COVER IMAGE
-    if (!existingImage && !selectedFile) {
-      toast.error("A cover image is required.", { id: loadingToast })
-      setSaving(false)
-      return
-    }
-
-    // UPLOAD IMAGE IF NEEDED
-    if (selectedFile) {
-      const fileName = `${Date.now()}-${selectedFile.name}`
-      const { error: uploadError } = await supabase.storage
-        .from("blog-images")
-        .upload(fileName, selectedFile)
-
-      if (uploadError) {
-        console.error(uploadError)
-        toast.error("Image upload failed.", { id: loadingToast })
-        setSaving(false)
-        return
+      if (selectedFile) {
+        formData.append("cover_image", selectedFile)
       }
 
-      const { data } = supabase.storage
-        .from("blog-images")
-        .getPublicUrl(fileName)
+      if (isEditing && initialData) {
+        formData.append("existing_image", existingImage)
 
-      coverImageUrl = data.publicUrl
-    }
+        const res = await fetch(`/api/admin/posts/${initialData.id}`, {
+          method: "PATCH",
+          body: formData,
+        })
 
-    const payload = {
-      title,
-      slug,
-      excerpt,
-      body,
-      cover_image: coverImageUrl,
-      author_id: authorId,
-    }
+        if (!res.ok) {
+          const data = await res.json().catch(() => null)
+          throw new Error(data?.error || "Failed to update post.")
+        }
+      } else {
+        const res = await fetch("/api/admin/posts", {
+          method: "POST",
+          body: formData,
+        })
 
-    let error: any = null
+        if (!res.ok) {
+          const data = await res.json().catch(() => null)
+          throw new Error(data?.error || "Failed to create post.")
+        }
+      }
 
-    // UPDATE MODE
-    if (isEditing && initialData) {
-      const { error: updateError } = await updatePost(initialData.id, payload)
-
-      error = updateError
-    }
-
-    // CREATE MODE
-    if (!isEditing) {
-      const { error: insertError } = await createPost(payload)
-
-      error = insertError
-    }
-
-    if (error) {
-      console.error("DB Error:", error)
-      toast.error("Failed to save post.", { id: loadingToast })
+      toast.success(isEditing ? "Post updated!" : "Post created!", {
+        id: loadingToast,
+      })
+      router.push("/admin/posts")
+    } catch (err: any) {
+      console.error("❌ Save error:", err)
+      toast.error(err.message || "Failed to save post.", { id: loadingToast })
+    } finally {
       setSaving(false)
-      return
     }
-
-    toast.success(isEditing ? "Post updated!" : "Post created!", {
-      id: loadingToast,
-    })
-
-    router.push("/admin/posts")
   }
 
-  // ----------------------------------------------------------
-  // RENDER
-  // ----------------------------------------------------------
+  // 🔴 Delete flow
+  const handleDeleteClick = () => {
+    if (!initialData?.id) return
+
+    openModal("confirm", {
+      title: "Delete this post?",
+      message:
+        "This action cannot be undone. This will permanently delete the post and its cover image.",
+      confirmLabel: "Delete",
+      cancelLabel: "Cancel",
+      isDanger: true,
+      // We'll let the modal call this when user confirms
+      onConfirm: async () => {
+        try {
+          const res = await fetch(`/api/admin/posts/${initialData.id}`, {
+            method: "DELETE",
+          })
+
+          const data = await res.json().catch(() => null)
+
+          if (!res.ok) {
+            throw new Error(data?.error || "Failed to delete post.")
+          }
+
+          toast.success("Post deleted.")
+          closeModal()
+          router.push("/admin/posts")
+        } catch (err: any) {
+          console.error("❌ Delete error:", err)
+          toast.error(err.message || "Failed to delete post.")
+        }
+      },
+    })
+  }
+
+  if (!authLoading && !user) {
+    return (
+      <div className="max-w-4xl mx-auto py-24 px-4 sm:px-6">
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-4">
+          {isEditing ? "Edit Blog Post" : "Create Blog Post"}
+        </h1>
+        <p className="text-neutral-600 dark:text-neutral-300">
+          You must be signed in to manage blog posts.
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div className="max-w-4xl mx-auto py-24 px-4 sm:px-6 space-y-10">
       <h1 className="text-3xl sm:text-4xl font-bold tracking-tight">
@@ -170,7 +210,7 @@ export default function PostForm({
       {/* Submit */}
       <button
         onClick={handleSubmit}
-        disabled={saving}
+        disabled={saving || authLoading}
         className="w-full cursor-pointer sm:w-auto px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 disabled:opacity-50 transition">
         {saving
           ? isEditing
@@ -180,6 +220,14 @@ export default function PostForm({
           ? "Update Post"
           : "Create Post"}
       </button>
+      {isEditing && initialData && (
+        <button
+          type="button"
+          onClick={handleDeleteClick}
+          className="w-full sm:w-auto px-6 py-3 rounded-xl border border-red-500 text-red-600 font-semibold hover:bg-red-50 dark:hover:bg-red-950/30 transition cursor-pointer">
+          Delete Post
+        </button>
+      )}
     </div>
   )
 }

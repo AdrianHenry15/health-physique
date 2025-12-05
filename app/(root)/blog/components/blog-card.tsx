@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import Image, { StaticImageData } from "next/image"
@@ -5,7 +6,7 @@ import Link from "next/link"
 import { useAuthStore } from "@/stores/auth-store"
 import { useModalStore } from "@/stores/modal-store"
 import toast from "react-hot-toast"
-import { deletePost } from "@/lib/supabase/blog"
+import { useRouter } from "next/navigation"
 
 type BlogCardProps = {
   id: string
@@ -24,31 +25,36 @@ export default function BlogCard({
   slug,
   image,
 }: BlogCardProps) {
-  const { user } = useAuthStore()
+  const router = useRouter()
+  const { isAdmin } = useAuthStore()
   const { openModal } = useModalStore()
-
-  const isAdmin = user?.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL_1
 
   const openDeleteModal = () => {
     openModal("confirm", {
       title: "Delete This Blog Post?",
       message:
         "This action cannot be undone. Do you want to permanently delete this post?",
-
       onConfirm: async () => {
-        const { error } = await deletePost(id)
+        try {
+          const res = await fetch(`/api/admin/posts/${id}`, {
+            method: "DELETE",
+          })
 
-        if (error) {
-          console.error(error)
-          toast.error("Failed to delete post.")
-          return
+          const data = await res.json().catch(() => null)
+
+          if (!res.ok) {
+            throw new Error(data?.error || "Failed to delete post.")
+          }
+
+          toast.success("Blog post deleted.")
+          router.refresh()
+        } catch (error: any) {
+          console.error("Delete post error:", error)
+          toast.error(error?.message || "Failed to delete post.")
         }
-
-        toast.success("Blog post deleted.")
       },
     })
   }
-
   return (
     <div className="relative rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800 hover:shadow-xl transition bg-white dark:bg-gray-900">
       <Link href={`/blog/${slug}`}>
@@ -76,7 +82,7 @@ export default function BlogCard({
       {isAdmin && (
         <div className="absolute top-3 right-3 flex gap-2 z-20">
           <Link
-            href={`/admin/posts/${id}`}
+            href={`/admin/posts/${slug}`}
             className="px-3 py-1 rounded-lg text-xs font-semibold bg-blue-600 text-white hover:bg-blue-700">
             Edit
           </Link>
