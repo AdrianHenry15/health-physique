@@ -13,7 +13,6 @@ interface AuthState {
   signOut: () => Promise<void>
   setSession: (session: Session | null) => void
   setLoading: (loading: boolean) => void
-  // derived
   isAdmin: boolean
 }
 
@@ -22,18 +21,24 @@ export const useAuthStore = create<AuthState>()(
     (set, get) => ({
       user: null,
       session: null,
-      loading: true,
+      loading: false, // start not-loading; we'll flip true during init
+
       get isAdmin() {
         const email = get().user?.email
         return (
-          !!email && [process.env.NEXT_PUBLIC_ADMIN_EMAIL_1].includes(email)
+          !!email &&
+          [
+            process.env.NEXT_PUBLIC_ADMIN_DEV_EMAIL,
+            process.env.NEXT_PUBLIC_ADMIN_WRITER_EMAIL,
+          ].includes(email)
         )
       },
+
       setSession: (session) =>
         set({
           session,
           user: session?.user ?? null,
-          loading: false,
+          loading: false, // whenever we set a session, auth is done loading
         }),
 
       setLoading: (loading) => set({ loading }),
@@ -47,7 +52,7 @@ export const useAuthStore = create<AuthState>()(
 
       signOut: async () => {
         await supabase.auth.signOut()
-        set({ user: null, session: null })
+        set({ user: null, session: null, loading: false })
       },
     }),
     {
@@ -60,17 +65,25 @@ export const useAuthStore = create<AuthState>()(
               email: state.user.email,
             }
           : null,
+        // we don’t persist session or loading
       }),
 
-      // ⚠️ Correct Zustand persist rehydration handler
       onRehydrateStorage: () => (state) => {
         if (!state) return
+
         state.setLoading(true)
 
-        // After hydration, sync Supabase session
-        supabase.auth.getSession().then(({ data }) => {
-          state.setSession(data.session ?? null)
-        })
+        supabase.auth
+          .getSession()
+          .then(({ data }) => {
+            // will also set loading=false via setSession
+            state.setSession(data.session ?? null)
+          })
+          .catch((err) => {
+            console.error("🔴 Error getting Supabase session:", err)
+            // fallback so we don't get stuck in loading
+            state.setLoading(false)
+          })
       },
     }
   )

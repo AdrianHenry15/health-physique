@@ -15,7 +15,7 @@ interface IUserIconMenuProps {
 const UserIconMenu = ({ closeMenu }: IUserIconMenuProps) => {
   const router = useRouter()
   const menuRef = useRef<HTMLDivElement | null>(null)
-  const { user, signOut } = useAuthStore()
+  const { user, signOut, isAdmin } = useAuthStore()
 
   const closeMenuRef = useRef(closeMenu)
   closeMenuRef.current = closeMenu
@@ -135,7 +135,7 @@ const UserIconMenu = ({ closeMenu }: IUserIconMenuProps) => {
 
       <div className="flex flex-col px-1 py-1">
         {/* Admin | Create Blog */}
-        {user.email === process.env.NEXT_PUBLIC_ADMIN_EMAIL_1 && (
+        {isAdmin && (
           <div className="border-b border-neutral-100 dark:border-neutral-800">
             <h5 className="ml-2 mt-2 text-xs">Admin</h5>
             <button
