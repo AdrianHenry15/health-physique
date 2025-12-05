@@ -15,6 +15,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { supabase } from "@/lib/supabase/client"
 import { SubmitButton } from "@/components/submit-button"
 import { useHCaptchaStore } from "@/stores/hcaptcha-store"
+import { useAuthStore } from "@/stores/auth-store"
 
 // Animation variants moved outside component to prevent recreation
 const formVariants = {
@@ -37,6 +38,7 @@ const PASSWORD_REGEX =
 
 // Memoized SignInForm component for build optimization
 const SignInForm = memo(({ searchParams }: { searchParams: Message }) => {
+  const { setSession } = useAuthStore()
   const router = useRouter()
   const urlSearchParams = useSearchParams()
   const [showPassword, setShowPassword] = useState(false)
@@ -170,9 +172,8 @@ const SignInForm = memo(({ searchParams }: { searchParams: Message }) => {
             hasSession: !!data.session,
           })
 
-          // The useAuthListener will automatically detect this auth state change
-          // and update the Zustand store, so we don't need to manually set anything
-
+          // Update Zustand auth store
+          setSession(data.session)
           // Redirect user
           const redirectTo = urlSearchParams.get("redirect_url") || "/"
           const finalRedirectTo =
@@ -201,6 +202,7 @@ const SignInForm = memo(({ searchParams }: { searchParams: Message }) => {
       setToken,
       router,
       urlSearchParams,
+      setSession,
     ]
   )
 

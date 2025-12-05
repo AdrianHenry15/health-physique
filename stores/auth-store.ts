@@ -5,41 +5,42 @@ import { persist } from "zustand/middleware"
 import type { User, Session } from "@supabase/supabase-js"
 import { supabase } from "@/lib/supabase/client"
 
+const ADMIN_EMAILS = [
+  process.env.NEXT_PUBLIC_ADMIN_DEV_EMAIL,
+  process.env.NEXT_PUBLIC_ADMIN_WRITER_EMAIL,
+].filter(Boolean) as string[] // remove undefined/null
+
 interface AuthState {
   user: User | null
   session: Session | null
   loading: boolean
+  isAdmin: boolean
   signIn: () => Promise<void>
   signOut: () => Promise<void>
   setSession: (session: Session | null) => void
   setLoading: (loading: boolean) => void
-  isAdmin: boolean
 }
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       user: null,
       session: null,
-      loading: false, // start not-loading; we'll flip true during init
+      loading: false,
+      isAdmin: false,
 
-      get isAdmin() {
-        const email = get().user?.email
-        return (
-          !!email &&
-          [
-            process.env.NEXT_PUBLIC_ADMIN_DEV_EMAIL,
-            process.env.NEXT_PUBLIC_ADMIN_WRITER_EMAIL,
-          ].includes(email)
-        )
-      },
+      setSession: (session) => {
+        const user = session?.user ?? null
+        const email = user?.email ?? ""
+        const isAdmin = !!email && ADMIN_EMAILS.includes(email)
 
-      setSession: (session) =>
         set({
           session,
-          user: session?.user ?? null,
-          loading: false, // whenever we set a session, auth is done loading
-        }),
+          user,
+          loading: false,
+          isAdmin,
+        })
+      },
 
       setLoading: (loading) => set({ loading }),
 
@@ -52,7 +53,12 @@ export const useAuthStore = create<AuthState>()(
 
       signOut: async () => {
         await supabase.auth.signOut()
-        set({ user: null, session: null, loading: false })
+        set({
+          user: null,
+          session: null,
+          loading: false,
+          isAdmin: false,
+        })
       },
     }),
     {
@@ -65,7 +71,7 @@ export const useAuthStore = create<AuthState>()(
               email: state.user.email,
             }
           : null,
-        // we don’t persist session or loading
+        // we do NOT persist session/loading/isAdmin
       }),
 
       onRehydrateStorage: () => (state) => {
@@ -76,12 +82,10 @@ export const useAuthStore = create<AuthState>()(
         supabase.auth
           .getSession()
           .then(({ data }) => {
-            // will also set loading=false via setSession
             state.setSession(data.session ?? null)
           })
           .catch((err) => {
             console.error("🔴 Error getting Supabase session:", err)
-            // fallback so we don't get stuck in loading
             state.setLoading(false)
           })
       },

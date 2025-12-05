@@ -10,7 +10,6 @@ export const supabase: SupabaseClient<Database> = createClient<Database>(
   {
     auth: {
       persistSession: true,
-      detectSessionInUrl: false,
       autoRefreshToken: true,
     },
   }
