@@ -89,7 +89,7 @@ export default function BlogCard({
 
           <button
             onClick={openDeleteModal}
-            className="px-3 py-1 rounded-lg text-xs font-semibold bg-red-600 text-white hover:bg-red-700">
+            className="px-3 cursor-pointer py-1 rounded-lg text-xs font-semibold bg-red-600 text-white hover:bg-red-700">
             Delete
           </button>
         </div>

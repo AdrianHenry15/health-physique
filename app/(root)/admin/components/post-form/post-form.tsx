@@ -224,7 +224,7 @@ export default function PostForm({
         <button
           type="button"
           onClick={handleDeleteClick}
-          className="w-full sm:w-auto px-6 py-3 rounded-xl border border-red-500 text-red-600 font-semibold hover:bg-red-50 dark:hover:bg-red-950/30 transition cursor-pointer">
+          className="w-full ml-4 sm:w-auto px-6 py-3 rounded-xl border border-red-500 text-red-600 font-semibold hover:bg-red-50 dark:hover:bg-red-950/30 transition cursor-pointer">
           Delete Post
         </button>
       )}

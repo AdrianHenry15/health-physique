@@ -3,7 +3,7 @@
 "use client"
 
 import { useAuthStore } from "@/stores/auth-store"
-import { LogOut, User } from "lucide-react"
+import { LogOut, Pencil, Upload, User } from "lucide-react"
 import { useRouter } from "next/navigation"
 import React, { useEffect, useRef } from "react"
 import ThemeSelector from "./theme-selector"
@@ -103,32 +103,28 @@ const UserIconMenu = ({ closeMenu }: IUserIconMenuProps) => {
       className="z-50 w-56 origin-top-right bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-md shadow-lg absolute right-0 top-full mt-2 ring-1 ring-black/5 dark:ring-white/5"
       role="menu"
       aria-label="User menu">
-      {/* USER HEADER */}
-      <div className="flex items-center gap-2 px-3 py-3 border-b border-neutral-100 dark:border-neutral-800">
-        <div className="w-6 h-6 rounded-full bg-neutral-100 dark:bg-neutral-700 flex items-center justify-center text-neutral-700 dark:text-neutral-100">
-          <User size={15} />
-        </div>
-        <div className="flex flex-col text-xs">
-          <span className="font-medium text-neutral-900 dark:text-neutral-100">
-            {user.email}
-          </span>
-        </div>
+      <div className="flex flex-col px-1 py-1">
+        {/* Profile */}
+        <h5 className="ml-2 mt-2 text-xs">User</h5>
+
+        <button
+          role="menuitem"
+          tabIndex={0}
+          className="w-full text-left px-3 py-2 text-sm rounded-md text-black hover:text-white hover:bg-blue-500 dark:hover:bg-blue-900 dark:text-white cursor-pointer transition-colors duration-150 flex items-center gap-2"
+          onClick={() => {
+            closeMenu()
+            router.push("/profile")
+          }}
+          onKeyDown={onActivate(() => {
+            closeMenu()
+            router.push("/profile")
+          })}>
+          <User size={16} /> Profile
+        </button>
+        <h5 className="ml-2 mt-2 text-xs text-gray-500 dark:text-gray-400">
+          {user.email}
+        </h5>
       </div>
-      {/* Profile */}
-      <button
-        role="menuitem"
-        tabIndex={0}
-        className="w-full text-left px-3 py-2 my-2 text-sm rounded-md text-black hover:text-white hover:bg-blue-500 dark:hover:bg-blue-900 dark:text-white cursor-pointer transition-colors duration-150 flex items-center gap-2"
-        onClick={() => {
-          closeMenu()
-          router.push("/profile")
-        }}
-        onKeyDown={onActivate(() => {
-          closeMenu()
-          router.push("/profile")
-        })}>
-        <User size={16} /> My Profile
-      </button>
       <div className="my-1 border-t border-neutral-100 dark:border-neutral-800" />
       {/* Theme */}
       <ThemeSelector closeMenu={closeMenu} onActivate={onActivate} />
@@ -150,7 +146,21 @@ const UserIconMenu = ({ closeMenu }: IUserIconMenuProps) => {
                 closeMenu()
                 router.push("/admin/posts/new")
               })}>
-              <User size={16} /> Create Blog
+              <Pencil size={16} /> Create Blog
+            </button>
+            <button
+              role="menuitem"
+              tabIndex={0}
+              className="w-full text-left px-3 py-2 mb-2 text-sm rounded-md text-black hover:text-white hover:bg-blue-500 dark:hover:bg-blue-900 dark:text-white cursor-pointer transition-colors duration-150 flex items-center gap-2"
+              onClick={() => {
+                closeMenu()
+                router.push("/admin/posts")
+              }}
+              onKeyDown={onActivate(() => {
+                closeMenu()
+                router.push("/admin/posts")
+              })}>
+              <Upload size={16} /> Manage Blog Posts
             </button>
           </div>
         )}
