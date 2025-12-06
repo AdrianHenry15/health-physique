@@ -1,20 +1,20 @@
 import Link from "next/link"
-import { BlogPost } from "@/lib/types"
-import { getAllPosts } from "@/lib/supabase/blog"
+import { MotivationalQuote } from "@/lib/types"
+import { getAllMotivationalQuotes } from "@/lib/supabase/quotes"
 
-export default async function AdminPostsPage() {
-  const posts = await getAllPosts()
-  const isLoading = posts === null
-  const noPosts = !isLoading && posts.length === 0
+export default async function AdminQuotesPage() {
+  const quotes = await getAllMotivationalQuotes()
+  const isLoading = quotes === null
+  const noQuotes = !isLoading && quotes.length === 0
 
   return (
     <div className="pt-28 max-w-5xl mx-auto px-6">
       <div className="flex justify-between mb-10">
-        <h1 className="text-3xl font-bold">Manage Posts</h1>
+        <h1 className="text-3xl font-bold">Manage Quotes</h1>
         <Link
-          href="/admin/posts/new"
+          href="/admin/quotes/new"
           className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-          + New Post
+          + New Quote
         </Link>
       </div>
 
@@ -22,43 +22,43 @@ export default async function AdminPostsPage() {
       {isLoading && (
         <div className="text-center py-20">
           <p className="text-gray-500 dark:text-gray-400 text-lg">
-            Loading articles...
+            Loading quotes...
           </p>
         </div>
       )}
 
-      {/* No Posts Fallback */}
-      {noPosts && (
+      {/* No Quotes Fallback */}
+      {noQuotes && (
         <div className="flex flex-col items-center justify-center py-28 text-center">
           <p className="text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-3">
-            No articles yet
+            No quotes yet
           </p>
           <p className="text-gray-500 dark:text-gray-400 max-w-md">
             Our team is preparing high-quality fitness, nutrition, and wellness
             posts.
             <br />
             <span className="font-medium text-blue-600 dark:text-blue-400">
-              New articles will be published soon!
+              New quotes will be published soon!
             </span>
           </p>
         </div>
       )}
 
-      {!isLoading && !noPosts && (
+      {!isLoading && !noQuotes && (
         <div className="space-y-4">
-          {posts!.map((post: BlogPost) => (
+          {quotes!.map((quote: MotivationalQuote) => (
             <div
-              key={post.id}
+              key={quote.id}
               className="p-4 border rounded-lg flex justify-between items-center bg-white dark:bg-neutral-900">
               <div>
-                <p className="font-semibold">{post.title}</p>
+                <p className="font-semibold">{quote.text}</p>
                 <p className="text-sm text-gray-500">
-                  {new Date(post.created_at!).toLocaleDateString()}
+                  {new Date(quote.created_at!).toLocaleDateString()}
                 </p>
               </div>
 
               <Link
-                href={`/admin/posts/${post.slug}`}
+                href={`/admin/quotes/${quote.id}`}
                 className="text-blue-600 hover:underline">
                 Edit →
               </Link>

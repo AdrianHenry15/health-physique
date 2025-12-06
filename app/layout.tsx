@@ -29,11 +29,7 @@ export default function MainLayout({
       <body className={nunito.className}>
         <Suspense fallback={<Loading />}>
           <Toaster position="top-center" />
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange>
+          <ThemeProvider>
             {children}
             <ModalRoot />
           </ThemeProvider>

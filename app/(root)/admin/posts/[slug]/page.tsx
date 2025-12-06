@@ -1,28 +1,15 @@
-"use client"
-
-import { use, useEffect, useState } from "react"
-import PostForm from "../../components/post-form/post-form"
+import PostForm from "../components/post-form"
 import { BlogPost } from "@/lib/types"
 import { getPostBySlug } from "@/lib/supabase/blog"
 
-export default function EditPostPage({
+export default async function EditPostPage({
   params,
 }: {
   params: Promise<{ slug: string }>
 }) {
-  const { slug } = use(params)
-  const [post, setPost] = useState<BlogPost | null>(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    async function loadPost() {
-      const postData = await getPostBySlug(slug)
-      setPost(postData)
-      setLoading(false)
-    }
-
-    loadPost()
-  }, [slug])
+  const { slug } = await params
+  const post: BlogPost | null = await getPostBySlug(slug)
+  const loading = post === null
 
   if (loading)
     return (

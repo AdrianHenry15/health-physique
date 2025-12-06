@@ -2,7 +2,7 @@
 
 import { useTheme } from "next-themes"
 import { Sun, Moon } from "lucide-react"
-import React from "react"
+import React, { useEffect, useState } from "react"
 
 interface IThemeSelectorProps {
   closeMenu: () => void
@@ -12,12 +12,20 @@ interface IThemeSelectorProps {
 }
 
 const ThemeSelector = ({ closeMenu, onActivate }: IThemeSelectorProps) => {
-  const { theme, setTheme } = useTheme()
+  const { resolvedTheme, setTheme } = useTheme()
 
-  // Toggle logic: light → dark, dark → light
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    // Defer the state update until AFTER effect completes
+    queueMicrotask(() => setMounted(true))
+  }, [])
+
+  if (!mounted) return null
+
   const toggleTheme = () => {
-    const newTheme = theme === "dark" ? "light" : "dark"
-    setTheme(newTheme)
+    const next = resolvedTheme === "dark" ? "light" : "dark"
+    setTheme(next)
     closeMenu()
   }
 
@@ -33,7 +41,7 @@ const ThemeSelector = ({ closeMenu, onActivate }: IThemeSelectorProps) => {
         className="w-full text-left px-3 py-2 my-1 text-sm rounded-md flex items-center gap-2 cursor-pointer transition-colors text-black dark:text-white hover:bg-blue-500 hover:text-white"
         onClick={toggleTheme}
         onKeyDown={onActivate(toggleTheme)}>
-        {theme === "dark" ? (
+        {resolvedTheme === "dark" ? (
           <>
             <Sun size={16} /> Light Mode
           </>

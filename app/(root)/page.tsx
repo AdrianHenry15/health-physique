@@ -1,24 +1,13 @@
-"use client"
-
 import Image from "next/image"
 import Link from "next/link"
 import FitnessImage from "@/public/hp-fitness-1.jpg"
 import DailyQuote from "@/components/daily-quote"
 import BlogPreview from "./components/blog-preview"
-import { useEffect, useState } from "react"
-import { BlogPost } from "@/lib/types"
 import { getAllPosts } from "@/lib/supabase/blog"
 
-export default function Home() {
-  const [posts, setPosts] = useState<BlogPost[]>([])
+export default async function Home() {
+  const posts = await getAllPosts()
 
-  useEffect(() => {
-    const load = async () => {
-      const data = await getAllPosts()
-      setPosts(data)
-    }
-    load()
-  }, [])
   return (
     <div className="relative overflow-hidden">
       <DailyQuote />

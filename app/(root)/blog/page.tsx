@@ -1,20 +1,8 @@
-"use client"
-
-import { useEffect, useState } from "react"
 import BlogCard from "./components/blog-card"
-import { BlogPost } from "@/lib/types"
 import { getAllPosts } from "@/lib/supabase/blog"
 
-export default function BlogPage() {
-  const [posts, setPosts] = useState<BlogPost[]>([])
-
-  useEffect(() => {
-    const load = async () => {
-      const data = await getAllPosts()
-      setPosts(data)
-    }
-    load()
-  }, [])
+export default async function BlogPage() {
+  const posts = await getAllPosts()
 
   const noPosts = posts && posts.length === 0
   const isLoading = posts === null

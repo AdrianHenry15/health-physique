@@ -1,12 +1,10 @@
-/* eslint-disable react-hooks/refs */
-
 "use client"
 
 import { useAuthStore } from "@/stores/auth-store"
-import { LogOut, Pencil, Upload, User } from "lucide-react"
+import { Edit, LogOut, Pencil, User } from "lucide-react"
 import { useRouter } from "next/navigation"
 import React, { useEffect, useRef } from "react"
-import ThemeSelector from "./theme-selector"
+// import ThemeSelector from "./theme-selector"
 
 interface IUserIconMenuProps {
   closeMenu: () => void
@@ -18,7 +16,9 @@ const UserIconMenu = ({ closeMenu }: IUserIconMenuProps) => {
   const { user, signOut, isAdmin } = useAuthStore()
 
   const closeMenuRef = useRef(closeMenu)
-  closeMenuRef.current = closeMenu
+  useEffect(() => {
+    closeMenuRef.current = closeMenu
+  }, [closeMenu])
 
   useEffect(() => {
     const el = menuRef.current
@@ -127,13 +127,14 @@ const UserIconMenu = ({ closeMenu }: IUserIconMenuProps) => {
       </div>
       <div className="my-1 border-t border-neutral-100 dark:border-neutral-800" />
       {/* Theme */}
-      <ThemeSelector closeMenu={closeMenu} onActivate={onActivate} />
+      {/* <ThemeSelector closeMenu={closeMenu} onActivate={onActivate} /> */}
 
       <div className="flex flex-col px-1 py-1">
         {/* Admin | Create Blog */}
         {isAdmin && (
           <div className="border-b border-neutral-100 dark:border-neutral-800">
             <h5 className="ml-2 mt-2 text-xs">Admin</h5>
+            {/* Create Blog */}
             <button
               role="menuitem"
               tabIndex={0}
@@ -148,6 +149,22 @@ const UserIconMenu = ({ closeMenu }: IUserIconMenuProps) => {
               })}>
               <Pencil size={16} /> Create Blog
             </button>
+            {/* Create Blog */}
+            <button
+              role="menuitem"
+              tabIndex={0}
+              className="w-full text-left px-3 py-2 mb-2 text-sm rounded-md text-black hover:text-white hover:bg-blue-500 dark:hover:bg-blue-900 dark:text-white cursor-pointer transition-colors duration-150 flex items-center gap-2"
+              onClick={() => {
+                closeMenu()
+                router.push("/admin/quotes/new")
+              }}
+              onKeyDown={onActivate(() => {
+                closeMenu()
+                router.push("/admin/quotes/new")
+              })}>
+              <Pencil size={16} /> Create Quote
+            </button>
+            {/* Manage Blog Posts */}
             <button
               role="menuitem"
               tabIndex={0}
@@ -160,7 +177,22 @@ const UserIconMenu = ({ closeMenu }: IUserIconMenuProps) => {
                 closeMenu()
                 router.push("/admin/posts")
               })}>
-              <Upload size={16} /> Manage Blog Posts
+              <Edit size={16} /> Manage Blog Posts
+            </button>
+            {/* Manage Motivational Quotes */}
+            <button
+              role="menuitem"
+              tabIndex={0}
+              className="w-full text-left px-3 py-2 mb-2 text-sm rounded-md text-black hover:text-white hover:bg-blue-500 dark:hover:bg-blue-900 dark:text-white cursor-pointer transition-colors duration-150 flex items-center gap-2"
+              onClick={() => {
+                closeMenu()
+                router.push("/admin/quotes")
+              }}
+              onKeyDown={onActivate(() => {
+                closeMenu()
+                router.push("/admin/quotes")
+              })}>
+              <Edit size={16} /> Manage Quotes
             </button>
           </div>
         )}

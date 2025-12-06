@@ -1,6 +1,11 @@
-// app/api/admin/posts/route.ts
 import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
+import { getAllPosts } from "@/lib/supabase/blog"
+
+export async function GET() {
+  const posts = await getAllPosts()
+  return NextResponse.json({ posts }, { status: 200 })
+}
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient()
@@ -11,10 +16,9 @@ export async function POST(req: NextRequest) {
   const slug = (formData.get("slug") as string) || ""
   const excerpt = (formData.get("excerpt") as string) || ""
   const body = formData.get("body") as string
-  const author_id = formData.get("author_id") as string
   const file = formData.get("cover_image") as File | null
 
-  if (!title || !body || !author_id) {
+  if (!title || !body) {
     return NextResponse.json(
       { error: "Missing required fields." },
       { status: 400 }
@@ -48,7 +52,6 @@ export async function POST(req: NextRequest) {
     slug,
     excerpt,
     body,
-    author_id,
     cover_image: publicUrl,
   }
 

@@ -14,36 +14,8 @@ export type Database = {
   }
   public: {
     Tables: {
-      authors: {
-        Row: {
-          avatar_url: string | null
-          bio: string | null
-          created_at: string | null
-          id: string
-          name: string
-          user_id: string | null
-        }
-        Insert: {
-          avatar_url?: string | null
-          bio?: string | null
-          created_at?: string | null
-          id?: string
-          name: string
-          user_id?: string | null
-        }
-        Update: {
-          avatar_url?: string | null
-          bio?: string | null
-          created_at?: string | null
-          id?: string
-          name?: string
-          user_id?: string | null
-        }
-        Relationships: []
-      }
       blog_posts: {
         Row: {
-          author_id: string | null
           body: string
           cover_image: string | null
           excerpt: string | null
@@ -54,7 +26,6 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
-          author_id?: string | null
           body: string
           cover_image?: string | null
           excerpt?: string | null
@@ -65,7 +36,6 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
-          author_id?: string | null
           body?: string
           cover_image?: string | null
           excerpt?: string | null
@@ -77,7 +47,27 @@ export type Database = {
         }
         Relationships: []
       }
+      // 👇 NEW TABLE
+      motivational_quotes: {
+        Row: {
+          id: string
+          text: string
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          text: string
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          text?: string
+          created_at?: string | null
+        }
+        Relationships: []
+      }
     }
+
     Views: {
       [_ in never]: never
     }

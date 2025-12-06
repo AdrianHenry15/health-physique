@@ -1,12 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import Image, { StaticImageData } from "next/image"
 import Link from "next/link"
 import { useAuthStore } from "@/stores/auth-store"
-import { useModalStore } from "@/stores/modal-store"
-import toast from "react-hot-toast"
-import { useRouter } from "next/navigation"
+import { useDeletePost } from "@/hooks/use-delete-post"
 
 type BlogCardProps = {
   id: string
@@ -25,36 +22,13 @@ export default function BlogCard({
   slug,
   image,
 }: BlogCardProps) {
-  const router = useRouter()
   const { isAdmin } = useAuthStore()
-  const { openModal } = useModalStore()
+  const { deletePost } = useDeletePost()
 
-  const openDeleteModal = () => {
-    openModal("confirm", {
-      title: "Delete This Blog Post?",
-      message:
-        "This action cannot be undone. Do you want to permanently delete this post?",
-      onConfirm: async () => {
-        try {
-          const res = await fetch(`/api/admin/posts/${id}`, {
-            method: "DELETE",
-          })
-
-          const data = await res.json().catch(() => null)
-
-          if (!res.ok) {
-            throw new Error(data?.error || "Failed to delete post.")
-          }
-
-          toast.success("Blog post deleted.")
-          router.refresh()
-        } catch (error: any) {
-          console.error("Delete post error:", error)
-          toast.error(error?.message || "Failed to delete post.")
-        }
-      },
-    })
+  const handleDelete = () => {
+    deletePost(id)
   }
+
   return (
     <div className="relative rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800 hover:shadow-xl transition bg-white dark:bg-gray-900">
       <Link href={`/blog/${slug}`}>
@@ -88,7 +62,7 @@ export default function BlogCard({
           </Link>
 
           <button
-            onClick={openDeleteModal}
+            onClick={handleDelete}
             className="px-3 cursor-pointer py-1 rounded-lg text-xs font-semibold bg-red-600 text-white hover:bg-red-700">
             Delete
           </button>

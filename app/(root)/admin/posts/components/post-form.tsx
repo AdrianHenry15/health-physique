@@ -1,11 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
-import { useEffect, useState } from "react"
-import { supabase } from "@/lib/supabase/client"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Author, BlogPost } from "@/lib/types"
-import AuthorSelect from "./author-select"
+import { BlogPost } from "@/lib/types"
 import BlogBodyEditor from "./blog-body-editor"
 import ImageUploader from "./image-uploader"
 import toast from "react-hot-toast"
@@ -27,8 +25,6 @@ export default function PostForm({
   const [body, setBody] = useState(initialData?.body || "")
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [saving, setSaving] = useState(false)
-  const [authors, setAuthors] = useState<Partial<Author>[]>([])
-  const [authorId, setAuthorId] = useState(initialData?.author_id || "")
 
   const existingImage = initialData?.cover_image || ""
 
@@ -41,15 +37,6 @@ export default function PostForm({
 
   const excerpt = body?.replace(/\s+/g, " ").trim().slice(0, 160) || ""
 
-  // Load authors
-  useEffect(() => {
-    async function loadAuthors() {
-      const { data } = await supabase.from("authors").select("id, name")
-      if (data) setAuthors(data)
-    }
-    loadAuthors()
-  }, [])
-
   const handleSubmit = async () => {
     if (authLoading) {
       toast.error("Checking authentication, please wait.")
@@ -58,11 +45,6 @@ export default function PostForm({
 
     if (!user) {
       toast.error("You must be signed in to save a post.")
-      return
-    }
-
-    if (!authorId) {
-      toast.error("Please select an author.")
       return
     }
 
@@ -82,7 +64,6 @@ export default function PostForm({
       formData.append("slug", slug)
       formData.append("excerpt", excerpt)
       formData.append("body", body)
-      formData.append("author_id", authorId)
       formData.append("user_id", user.id)
 
       if (selectedFile) {
@@ -189,13 +170,6 @@ export default function PostForm({
         />
       </div>
 
-      {/* Author */}
-      <AuthorSelect
-        authorId={authorId}
-        setAuthorId={setAuthorId}
-        authors={authors}
-      />
-
       {/* Body */}
       <BlogBodyEditor value={body} onChange={setBody} />
 
@@ -224,7 +198,7 @@ export default function PostForm({
         <button
           type="button"
           onClick={handleDeleteClick}
-          className="w-full ml-4 sm:w-auto px-6 py-3 rounded-xl border border-red-500 text-red-600 font-semibold hover:bg-red-50 dark:hover:bg-red-950/30 transition cursor-pointer">
+          className="w-full sm:ml-4 sm:w-auto px-6 py-3 rounded-xl border border-red-500 text-red-600 font-semibold hover:bg-red-50 dark:hover:bg-red-950/30 transition cursor-pointer">
           Delete Post
         </button>
       )}

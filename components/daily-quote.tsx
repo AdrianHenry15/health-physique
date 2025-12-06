@@ -1,9 +1,24 @@
 import { BsQuote } from "react-icons/bs"
+import type { MotivationalQuote } from "@/lib/types"
+import { getAllMotivationalQuotes } from "@/lib/supabase/quotes"
 
-const quote =
-  "Discipline is choosing what you want most over what you want now."
+export default async function DailyQuote() {
+  const quotes = await getAllMotivationalQuotes()
 
-export default function DailyQuote() {
+  const fallback: MotivationalQuote = {
+    id: "fallback",
+    text: "Discipline is choosing what you want most over what you want now.",
+    created_at: null,
+  }
+
+  const list = quotes.length > 0 ? quotes : [fallback]
+
+  // 🔁 Quote-of-the-day: deterministic based on current date
+  const today = new Date()
+  const daysSinceEpoch = Math.floor(today.getTime() / (1000 * 60 * 60 * 24))
+  const index = ((daysSinceEpoch % list.length) + list.length) % list.length
+  const selected = list[index]
+
   return (
     <div className="mt-16 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-black relative overflow-hidden">
       {/* Gradient Accent Bar */}
@@ -19,7 +34,7 @@ export default function DailyQuote() {
         {/* Quote text */}
         <div>
           <p className="text-lg md:text-xl italic leading-relaxed text-gray-800 dark:text-gray-200">
-            “{quote}”
+            “{selected.text}”
           </p>
 
           <p className="mt-2 text-sm font-medium tracking-wide uppercase text-gray-500 dark:text-gray-400">

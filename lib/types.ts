@@ -11,22 +11,10 @@ export type BlogPost = Tables["blog_posts"]["Row"]
 export type BlogPostInsert = Tables["blog_posts"]["Insert"]
 export type BlogPostUpdate = Tables["blog_posts"]["Update"]
 
-export type Author = Tables["authors"]["Row"]
-export type AuthorInsert = Tables["authors"]["Insert"]
-export type AuthorUpdate = Tables["authors"]["Update"]
-
-/**
- * RELATIONSHIP MODELS
- * These represent joined objects, like posts with authors & categories.
- */
-
-export type BlogPostWithAuthor = BlogPost & {
-  author: Author | null
-}
-
-export type BlogPostFull = BlogPost & {
-  author: Author | null
-}
+// 👇 Motivational quotes
+export type MotivationalQuote = Tables["motivational_quotes"]["Row"]
+export type MotivationalQuoteInsert = Tables["motivational_quotes"]["Insert"]
+export type MotivationalQuoteUpdate = Tables["motivational_quotes"]["Update"]
 
 /**
  * IMAGE TYPE
@@ -50,15 +38,12 @@ export type BlogPostCard = {
   excerpt: string | null
   cover_image: string | null
   created_at: string | null
-  author_name: string | null
 }
 
 /**
  * Utility: Convert DB row → UI card
  */
-export function toPostCard(
-  post: BlogPost & { author?: Author | null }
-): BlogPostCard {
+export function toPostCard(post: BlogPost): BlogPostCard {
   return {
     id: post.id,
     title: post.title,
@@ -66,6 +51,5 @@ export function toPostCard(
     excerpt: post.excerpt ?? null,
     cover_image: post.cover_image ?? null,
     created_at: post.created_at ?? null,
-    author_name: post.author?.name ?? null,
   }
 }

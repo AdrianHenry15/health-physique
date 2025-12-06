@@ -1,15 +1,36 @@
-// app/api/admin/posts/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@/lib/supabase/server"
+import { getPostBySlug } from "@/lib/supabase/blog"
 
-type RouteParams = {
-  params: Promise<{ id: string }>
+export async function GET(
+  req: NextRequest,
+  {
+    params,
+  }: {
+    params: Promise<{ id: string }>
+  }
+) {
+  const { id } = await params
+  const post = await getPostBySlug(id)
+
+  if (!post) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 })
+  }
+
+  return NextResponse.json({ post }, { status: 200 })
 }
 
 /* -------------------------
  * UPDATE POST (PATCH)
  * ------------------------*/
-export async function PATCH(req: NextRequest, { params }: RouteParams) {
+export async function PATCH(
+  req: NextRequest,
+  {
+    params,
+  }: {
+    params: Promise<{ id: string }>
+  }
+) {
   const { id } = await params
   const supabase = await createClient()
 
@@ -19,7 +40,6 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
   const slug = (formData.get("slug") as string) || ""
   const excerpt = (formData.get("excerpt") as string) || ""
   const body = formData.get("body") as string
-  const author_id = formData.get("author_id") as string
   const existingImage = (formData.get("existing_image") as string) || ""
   const file = formData.get("cover_image") as File | null
 
@@ -54,7 +74,6 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
     slug,
     excerpt,
     body,
-    author_id,
     cover_image: coverImageUrl,
   }
 
@@ -87,7 +106,14 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
 /* -------------------------
  * DELETE POST
  * ------------------------*/
-export async function DELETE(_req: NextRequest, { params }: RouteParams) {
+export async function DELETE(
+  req: NextRequest,
+  {
+    params,
+  }: {
+    params: Promise<{ id: string }>
+  }
+) {
   const { id } = await params
   const supabase = await createClient()
 

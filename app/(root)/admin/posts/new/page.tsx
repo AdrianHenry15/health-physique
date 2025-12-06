@@ -1,4 +1,4 @@
-import PostForm from "../../components/post-form/post-form"
+import PostForm from "../components/post-form"
 
 export default function NewPostPage() {
   return <PostForm isEditing={false} />
